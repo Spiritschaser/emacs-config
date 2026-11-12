@@ -1,0 +1,13 @@
+diff --git a/bin/codex-ide-mcp-server.py b/bin/codex-ide-mcp-server.py
+index 1bbe2e7..e838355 100644
+--- a/bin/codex-ide-mcp-server.py
++++ b/bin/codex-ide-mcp-server.py
+@@ -329,7 +329,7 @@ class EmacsProxy:
+         params = params or {}
+         command = [self.emacsclient]
+         if self.server_name:
+-            command.extend(["-s", self.server_name])
++            command.extend(["--server-file", self.server_name])
+         command.extend(["--eval", self._tool_call_expression(name, params)])
+         debug_log("dispatch command:", command)
+         started = time.monotonic()

@@ -1,0 +1,50 @@
+# Emacs packages and caches
+elpa/
+.cache/
+eln-cache/
+tree-sitter/
+auto-save-list/
+backups/
+
+# Emacs temporary files
+*~
+\#*\#
+.\#*
+*.elc
+*.eln
+
+# Session and runtime state
+projects.eld
+tramp
+transient/
+server/
+url/
+recentf
+savehist
+save-place
+bookmarks
+
+# Clutch runtime data
+clutch/
+
+# Codex runtime and backups
+codex-ide-backup/
+
+# Credentials and local connections
+sql-connections.el
+authinfo
+.authinfo
+.authinfo.gpg
+secrets.el
+credentials.el
+.env
+.env.*
+*token*
+*secret*
+*password*
+
+# Python
+__pycache__/
+.venv/
+venv/
+.ipynb_checkpoints/
