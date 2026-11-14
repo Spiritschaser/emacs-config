@@ -1,13 +1,227 @@
 diff --git a/bin/codex-ide-mcp-server.py b/bin/codex-ide-mcp-server.py
-index 1bbe2e7..e838355 100644
+index 1bbe2e7..8704caa 100644
 --- a/bin/codex-ide-mcp-server.py
 +++ b/bin/codex-ide-mcp-server.py
-@@ -329,7 +329,7 @@ class EmacsProxy:
+@@ -310,10 +310,12 @@ def write_message(payload: dict[str, Any]) -> None:
+ 
+ 
+ class EmacsProxy:
+-    def __init__(self, emacsclient: str, server_name: str | None, timeout_sec: float) -> None:
++    def __init__(self, emacsclient: str, server_name: str | None, timeout_sec: float,
++                 server_transport: str | None = None) -> None:
+         self.emacsclient = emacsclient
+         self.server_name = server_name
+         self.timeout_sec = timeout_sec
++        self.server_transport = server_transport or ("tcp" if os.name == "nt" else "local")
+ 
+     def _elisp_string(self, value: str) -> str:
+         return json.dumps(value, ensure_ascii=True)
+@@ -329,7 +331,8 @@ class EmacsProxy:
          params = params or {}
          command = [self.emacsclient]
          if self.server_name:
 -            command.extend(["-s", self.server_name])
-+            command.extend(["--server-file", self.server_name])
++            option = "--server-file" if self.server_transport == "tcp" else "--socket-name"
++            command.extend([option, self.server_name])
          command.extend(["--eval", self._tool_call_expression(name, params)])
          debug_log("dispatch command:", command)
          started = time.monotonic()
+@@ -422,11 +425,13 @@ def main() -> int:
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--emacsclient", default="emacsclient")
+     parser.add_argument("--server-name", default=None)
++    parser.add_argument("--server-transport", choices=("tcp", "local"), default=None)
+     parser.add_argument("--emacsclient-timeout", type=float, default=DEFAULT_EMACSCLIENT_TIMEOUT_SEC)
+     args = parser.parse_args()
+     debug_log("parsed args:", args)
+ 
+-    proxy = EmacsProxy(args.emacsclient, args.server_name, args.emacsclient_timeout)
++    proxy = EmacsProxy(args.emacsclient, args.server_name, args.emacsclient_timeout,
++                       args.server_transport)
+ 
+     while True:
+         try:
+diff --git a/codex-ide-mcp-bridge.el b/codex-ide-mcp-bridge.el
+index 0e5e05d..e876990 100644
+--- a/codex-ide-mcp-bridge.el
++++ b/codex-ide-mcp-bridge.el
+@@ -217,8 +217,18 @@ This is used to bypass bridge-originated elicitation prompts when
+ 
+ (defun codex-ide-mcp-bridge--ensure-server-running-p (target-server-name)
+   "Return non-nil when TARGET-SERVER-NAME is running.
+-Errors from `server-running-p' are treated as nil."
+-  (server-running-p target-server-name))
++Unknown states and errors from `server-running-p' are treated as nil."
++  (condition-case nil
++      (eq t (server-running-p target-server-name))
++    (error nil)))
++
++(defun codex-ide-mcp-bridge--tcp-file-owner (file)
++  "Return the PID in FILE's header, without exposing the authentication key."
++  (when (file-readable-p file)
++    (with-temp-buffer
++      (insert-file-contents-literally file nil 0 128)
++      (when (looking-at "[^ \n]+ \\([0-9]+\\)")
++        (string-to-number (match-string 1))))))
+ 
+ ;;;###autoload
+ (defun codex-ide-mcp-bridge-status ()
+@@ -234,7 +244,8 @@ Errors from `server-running-p' are treated as nil."
+          (server-running (and enabled
+                               (codex-ide-mcp-bridge--ensure-server-running-p
+                                server-name)))
+-         (ready (and enabled
++         (ready (and enabled server-running
++                     (processp server-process) (process-live-p server-process)
+                      (file-exists-p script-path)
+                      python-path
+                      emacsclient-path)))
+@@ -252,11 +263,39 @@ Errors from `server-running-p' are treated as nil."
+ 
+ ;;;###autoload
+ (defun codex-ide-mcp-bridge-ensure-server ()
+-  "Ensure the target Emacs server for the bridge is running."
++  "Ensure this Emacs owns the server targeted by the bridge.
++Never attach the bridge to another Emacs or remove its connection file."
+   (when (codex-ide-mcp-bridge-enabled-p)
+-    (let ((server-name (codex-ide-mcp-bridge--resolved-server-name)))
+-      (unless (codex-ide-mcp-bridge--ensure-server-running-p server-name)
+-        (server-start nil codex-ide-suppress-server-start-prompts)))))
++    (let* ((target (codex-ide-mcp-bridge--resolved-server-name))
++           (directory (if server-use-tcp server-auth-dir server-socket-dir))
++           (file (expand-file-name server-name directory)))
++      (unless (equal (expand-file-name target directory) file)
++        (user-error "MCP target differs from this Emacs server: %s" target))
++      (unless (and (processp server-process)
++                   (process-live-p server-process))
++        ;; TCP's stock running check recognizes only 127.0.0.1 headers.
++        ;; Treat any other live file owner conservatively, including PID reuse.
++        (let ((owner (and server-use-tcp
++                          (codex-ide-mcp-bridge--tcp-file-owner file))))
++          (when (and owner (/= owner (emacs-pid)) (process-attributes owner))
++            (user-error "Emacs server file belongs to live PID %s; inspect %s before recovery"
++                        owner file))
++          ;; A stopped listener can leave a file naming this very Emacs.
++          ;; The PID-only stock check would otherwise mistake it for a peer.
++          (when (and owner (= owner (emacs-pid)))
++            (when (process-live-p (get-process server-name))
++              (user-error "A live listener named %s exists; inspect it before recovery" server-name))
++            (let (delete-by-moving-to-trash) (delete-file file))))
++        (when (eq t (server-running-p server-name))
++          (user-error "Another process owns Emacs server %s; inspect it before recovery" file))
++        ;; `server-start' removes stale TCP files and Unix sockets itself.
++        ;; In particular, :other from `server-running-p' must not skip this.
++        (server-start nil codex-ide-suppress-server-start-prompts)
++        (message "Emacs MCP server: pid=%s transport=%s endpoint=%s"
++                 (emacs-pid) (if server-use-tcp "tcp" "local") file))
++      (unless (and (processp server-process)
++                   (process-live-p server-process))
++        (error "Emacs server did not start: %s" file)))))
+ 
+ ;;;###autoload
+ (defun codex-ide-mcp-bridge-mcp-config-args ()
+@@ -271,11 +310,15 @@ Errors from `server-running-p' are treated as nil."
+            (emacsclient-command
+             (or (executable-find codex-ide-emacs-bridge-emacsclient-command)
+                 codex-ide-emacs-bridge-emacsclient-command))
+-           (server-name codex-ide-emacs-bridge-server-name)
++           (server-name
++            (expand-file-name
++             (codex-ide-mcp-bridge--resolved-server-name)
++             (if server-use-tcp server-auth-dir server-socket-dir)))
+            (script-args
+             (append (list script-path
+                           "--emacsclient"
+-                          emacsclient-command)
++                          emacsclient-command
++                          "--server-transport" (if server-use-tcp "tcp" "local"))
+                     (when (and server-name
+                                (not (string-empty-p server-name)))
+                       (list "--server-name" server-name)))))
+diff --git a/tests/codex-ide-mcp-bridge-tests.el b/tests/codex-ide-mcp-bridge-tests.el
+index a0d56e6..21231cf 100644
+--- a/tests/codex-ide-mcp-bridge-tests.el
++++ b/tests/codex-ide-mcp-bridge-tests.el
+@@ -91,52 +91,36 @@
+ 				     (should-not codex-ide-enable-emacs-tool-bridge))))))
+ 
+ (ert-deftest codex-ide-mcp-bridge-mcp-config-args-reflect-enabled-settings ()
+-  (let ((project-dir (codex-ide-test--make-temp-project)))
+-    (codex-ide-test-with-fixture project-dir
+-				 (let ((codex-ide-enable-emacs-tool-bridge t)
+-				       (codex-ide-emacs-tool-bridge-name "editor")
+-				       (codex-ide-emacs-bridge-python-command "python3")
+-				       (codex-ide-emacs-bridge-emacsclient-command "emacsclient")
+-				       (codex-ide-emacs-bridge-script-path "/tmp/codex-ide-mcp-server.py")
+-				       (codex-ide-emacs-bridge-server-name "testsrv")
+-				       (codex-ide-emacs-bridge-startup-timeout 15)
+-				       (codex-ide-emacs-bridge-tool-timeout 45))
+-				   (cl-letf (((symbol-function 'executable-find)
+-					      (lambda (command)
+-						(pcase command
+-						  ("python3" "/usr/bin/python3")
+-						  ("emacsclient" "/usr/bin/emacsclient")
+-						  (_ nil)))))
+-				     (should
+-				      (equal (codex-ide-mcp-bridge-mcp-config-args)
+-					     '("-c" "mcp_servers.editor.command=\"/usr/bin/python3\""
+-					       "-c" "mcp_servers.editor.args=[\"/tmp/codex-ide-mcp-server.py\",\"--emacsclient\",\"/usr/bin/emacsclient\",\"--server-name\",\"testsrv\"]"
+-					       "-c" "mcp_servers.editor.startup_timeout_sec=15"
+-					       "-c" "mcp_servers.editor.tool_timeout_sec=45"))))))))
+-
+-(ert-deftest codex-ide-mcp-bridge-mcp-config-args-omit-default-server-name ()
+-  (let ((project-dir (codex-ide-test--make-temp-project)))
+-    (codex-ide-test-with-fixture project-dir
+-				 (let ((codex-ide-enable-emacs-tool-bridge t)
+-				       (codex-ide-emacs-tool-bridge-name "editor")
+-				       (codex-ide-emacs-bridge-python-command "python3")
+-				       (codex-ide-emacs-bridge-emacsclient-command "emacsclient")
+-				       (codex-ide-emacs-bridge-script-path "/tmp/codex-ide-mcp-server.py")
+-				       (codex-ide-emacs-bridge-server-name nil)
+-				       (codex-ide-emacs-bridge-startup-timeout 15)
+-				       (codex-ide-emacs-bridge-tool-timeout 45))
+-				   (cl-letf (((symbol-function 'executable-find)
+-					      (lambda (command)
+-						(pcase command
+-						  ("python3" "/usr/bin/python3")
+-						  ("emacsclient" "/usr/bin/emacsclient")
+-						  (_ nil)))))
+-				     (should
+-				      (equal (codex-ide-mcp-bridge-mcp-config-args)
+-					     '("-c" "mcp_servers.editor.command=\"/usr/bin/python3\""
+-					       "-c" "mcp_servers.editor.args=[\"/tmp/codex-ide-mcp-server.py\",\"--emacsclient\",\"/usr/bin/emacsclient\"]"
+-					       "-c" "mcp_servers.editor.startup_timeout_sec=15"
+-					       "-c" "mcp_servers.editor.tool_timeout_sec=45"))))))))
++  (let ((codex-ide-want-mcp-bridge t)
++        (codex-ide-emacs-tool-bridge-name "editor")
++        (codex-ide-emacs-bridge-server-name "testsrv")
++        (codex-ide-emacs-bridge-startup-timeout 15)
++        (codex-ide-emacs-bridge-tool-timeout 45))
++    (dolist (tcp '(t nil))
++      (let* ((server-use-tcp tcp)
++             (args (codex-ide-mcp-bridge-mcp-config-args))
++             (script-args (json-parse-string
++                           (substring (nth 3 args) (1+ (string-search "=" (nth 3 args))))
++                           :array-type 'list)))
++        (should (equal (car script-args) (codex-ide-mcp-bridge--resolved-script-path)))
++        (should (equal (cadr (member "--server-transport" script-args))
++                       (if tcp "tcp" "local")))
++        (should (equal (cadr (member "--server-name" script-args))
++                       (expand-file-name "testsrv" (if tcp server-auth-dir server-socket-dir))))
++        (should (member "mcp_servers.editor.startup_timeout_sec=15" args))
++        (should (member "mcp_servers.editor.tool_timeout_sec=45" args))))))
++
++(ert-deftest codex-ide-mcp-bridge-mcp-config-args-default-server-is-explicit ()
++  (let ((codex-ide-want-mcp-bridge t)
++        (codex-ide-emacs-bridge-server-name nil))
++    (dolist (tcp '(t nil))
++      (let* ((server-use-tcp tcp)
++             (args (codex-ide-mcp-bridge-mcp-config-args))
++             (script-args (json-parse-string
++                           (substring (nth 3 args) (1+ (string-search "=" (nth 3 args))))
++                           :array-type 'list)))
++        (should (equal (cadr (member "--server-name" script-args))
++                       (expand-file-name server-name (if tcp server-auth-dir server-socket-dir))))))))
+ 
+ (ert-deftest codex-ide-mcp-bridge-request-exempt-from-approval-matches-bridge-tool-payload ()
+   (let ((project-dir (codex-ide-test--make-temp-project)))

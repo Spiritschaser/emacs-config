@@ -6,8 +6,15 @@
 (require 'cl-lib)
 (require 'python)
 (require 'project)
-(require 'comint-mime)
-(require 'code-cells)
+(require 'init-eldoc)
+(use-package comint-mime
+  :demand t)
+
+(use-package code-cells
+  :demand t)
+
+(use-package drepl
+  :defer t)
 
 (defgroup python-workspace nil "Persistent IPython workspace." :group 'python)
 (defcustom python-workspace-backend 'drepl
@@ -25,6 +32,7 @@
 (defvar-local python-workspace--session nil)
 (defvar-local python-workspace--saved-locals nil)
 (defvar-local python-workspace--owned-cells nil)
+(defvar-local python-workspace--request-op nil)
 (defvar python-workspace--python-choice nil)
 (defvar python-workspace--environment-choices nil
   "Directory to (PYTHON . BACKEND) choices for this Emacs session.")
@@ -70,20 +78,91 @@
               shr-use-fonts nil
               comint-mime-image-props '(:max-width 1000 :max-height 750)
               comint-buffer-maximum-size 3000)
+  (setq-local comint-prompt-read-only t)
   (add-hook 'comint-output-filter-functions #'comint-truncate-buffer t t)
   (add-hook 'comint-output-filter-functions #'python-workspace--trim-output t t)
   ;; `local-set-key' otherwise mutates the shared major-mode keymap.
   (use-local-map (copy-keymap (current-local-map)))
   (local-set-key (kbd "C-c %") python-workspace-prefix-map)
+  (local-set-key (kbd "RET") #'python-workspace-send-input)
+  (local-set-key [return] #'python-workspace-send-input)
+  (local-set-key [remap comint-send-input] #'python-workspace-send-input)
   (when (fboundp 'evil-local-set-key)
     (dolist (state '(normal insert visual))
       (evil-local-set-key state (kbd "C-c %") python-workspace-prefix-map))
-    ;; Evil's insert-state RET takes precedence over Comint's remapping.
-    (evil-local-set-key 'insert (kbd "RET")
-                        (if (derived-mode-p 'drepl-mode)
-                            #'drepl-send-input-maybe
-                          #'comint-send-input)))
+    ;; Bind both events: evil-collection maps physical Enter to `newline',
+    ;; preventing its translation to RET in insert state.
+    (dolist (state '(normal insert))
+      (evil-local-set-key state (kbd "RET") #'python-workspace-send-input)
+      (evil-local-set-key state [return] #'python-workspace-send-input)))
   (when (fboundp 'evil-insert-state) (evil-insert-state)))
+
+(defun python-workspace--ready ()
+  "Wait briefly for service requests, but never queue behind user code."
+  (let ((deadline (+ (float-time) 2)))
+    (while (and (eq (drepl--status drepl--current) 'busy)
+                (memq python-workspace--request-op '(describe complete checkinput))
+                (< (float-time) deadline)
+                (comint-check-proc (current-buffer)))
+      (accept-process-output (get-buffer-process (current-buffer)) 0.05))
+    (unless (eq (drepl--status drepl--current) 'ready)
+      (user-error "IPython is busy; finish or interrupt it in the console"))))
+
+(defun python-workspace-send-input (&optional force)
+  "Submit current input in full; never execute a line from old output.
+FORCE bypasses the dREPL completeness check, as in `drepl-send-input-maybe'."
+  (interactive "P")
+  (let ((proc (get-buffer-process (current-buffer))))
+    (unless (and proc (process-live-p proc))
+      (user-error "Workspace process is not running"))
+    (when (< (point) (process-mark proc))
+      (user-error "Move to the current prompt to send input"))
+    (if (derived-mode-p 'drepl-mode)
+        (if (eq (drepl--status drepl--current) 'rawio)
+            (progn (goto-char (point-max)) (comint-send-input))
+          (python-workspace--ready)
+          (goto-char (point-max))
+          (drepl-send-input-maybe force))
+      (goto-char (point-max))
+      (comint-send-input))))
+
+(defun python-workspace--finish-service-request (original repl callback op &rest args)
+  "Wait for the ready frame after a synchronous service reply.
+dREPL can return a reply while the following OSC ready frame is still
+incomplete in the Comint buffer.  Submitting or completing input then
+can splice that input into the protocol frame and leave the REPL busy."
+  (let ((reply (apply original repl callback op args)))
+    (when (and (eq callback 'sync)
+               (memq op '(checkinput complete describe))
+               (drepl-ipython-p repl)
+               (buffer-local-value 'python-workspace--session (drepl--buffer repl)))
+      (with-current-buffer (drepl--buffer repl)
+        (python-workspace--ready)))
+    reply))
+
+(with-eval-after-load 'drepl-ipython
+  ;; Scoped to our consoles: leave the installed package and other REPLs alone.
+  (advice-add 'drepl--communicate :around #'python-workspace--finish-service-request)
+  (cl-defmethod drepl--send-request :before ((repl drepl-ipython) data)
+    (with-current-buffer (drepl--buffer repl)
+      (when python-workspace--session
+        (setq python-workspace--request-op (intern (plist-get data :op))))))
+  (cl-defmethod drepl--command :around ((repl drepl-ipython))
+    (if (not (buffer-local-value 'python-workspace--session (drepl--buffer repl)))
+        (cl-call-next-method)
+      ;; Consume the package's script/config as usual, but initialize display
+      ;; before run_loop prints its first prompt.  No hidden eval/count bump.
+      (list python-interpreter "-c"
+            (concat
+             "from sys import stdin; exec(stdin.read(int(stdin.readline()))); "
+             "_shell = PythonRepl.instance(json.loads(stdin.readline())); "
+             "_result = _shell.run_cell("
+             (json-serialize
+              (format "exec(compile(__import__('pathlib').Path(%s).read_text(encoding='utf-8'), %s, 'exec'))"
+                      (json-serialize python-workspace--setup-file)
+                      (json-serialize python-workspace--setup-file)))
+             ", store_history=False, silent=True); "
+             "_result.raise_error(); _shell.run_loop()")))))
 
 (defun python-workspace--mime-osc (command text)
   "Handle package MIME messages, decoding escaped Windows file URIs.
@@ -123,8 +202,7 @@ When ECHO is non-nil, display the source code before its output."
       (if (eq (python-workspace--session-backend session) 'drepl)
           (progn
             ;; Avoid unbounded queues and accidental input into input()/pdb.
-            (unless (eq (drepl--status drepl--current) 'ready)
-              (user-error "IPython is busy; finish or interrupt it in the console"))
+            (python-workspace--ready)
             (when echo (python-workspace--echo-input code))
             (drepl-eval code))
         (unless (python-shell-comint-end-of-output-p
@@ -185,10 +263,11 @@ When ECHO is non-nil, display the source code before its output."
               (python-workspace--wait buffer (lambda () python-shell--first-prompt-received))
               (with-current-buffer buffer (comint-mime-setup))))
           (python-workspace--install-mime-handler buffer)
-          (python-workspace--send
-           session (format "exec(compile(__import__('pathlib').Path(%s).read_text(encoding='utf-8'), %s, 'exec'))"
-                           (json-serialize python-workspace--setup-file)
-                           (json-serialize python-workspace--setup-file)))
+          (unless (eq backend 'drepl)
+            (python-workspace--send
+             session (format "exec(compile(__import__('pathlib').Path(%s).read_text(encoding='utf-8'), %s, 'exec'))"
+                             (json-serialize python-workspace--setup-file)
+                             (json-serialize python-workspace--setup-file))))
           (python-workspace--wait
            buffer (if (eq backend 'drepl)
                       (lambda () (eq (drepl--status drepl--current) 'ready))

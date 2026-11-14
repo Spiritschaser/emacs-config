@@ -48,6 +48,22 @@
 (add-hook 'treemacs-mode-hook
           #'my/treemacs-native-context-menu)
 
+;;; Use Arial for the file tree
+
+(require 'face-remap)
+
+(defvar-local my/treemacs-font-cookie nil
+  "Face remapping cookie for the Treemacs font.")
+
+(defun my/treemacs-use-arial ()
+  "Use Arial in this Treemacs buffer, preserving size and icon faces."
+  (when my/treemacs-font-cookie
+    (face-remap-remove-relative my/treemacs-font-cookie))
+  (setq my/treemacs-font-cookie
+        (face-remap-add-relative 'default :family "Calibri")))
+
+(add-hook 'treemacs-mode-hook #'my/treemacs-use-arial)
+
 ;;; Keep scroll bars out of the file tree
 
 (defun my/treemacs-no-scroll-bars ()
@@ -63,6 +79,7 @@
 (dolist (buffer (buffer-list))
   (with-current-buffer buffer
     (when (derived-mode-p 'treemacs-mode)
+      (my/treemacs-use-arial)
       (my/treemacs-no-scroll-bars))))
 
 (provide 'init-treemacs)

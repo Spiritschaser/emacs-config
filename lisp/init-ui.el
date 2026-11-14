@@ -23,7 +23,10 @@
 (add-hook 'prog-mode-hook #'hl-line-mode)
 
 ;; Dark theme.
-(load-theme 'modus-vivendi-tinted t)
+(use-package modus-themes
+  :demand t
+  :config
+  (load-theme 'modus-vivendi-tinted t))
 
 ;; Keep the toolbar enabled.
 (tool-bar-mode 1)
@@ -87,6 +90,8 @@
 
 (with-eval-after-load 'tab-line
   (setq tab-line-close-tab-function #'my/tab-line-close-buffer))
+
+(require 'init-tab-menu)
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

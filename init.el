@@ -15,19 +15,7 @@
 (add-to-list 'load-path
              (expand-file-name "lisp" user-emacs-directory))
 
-(require 'package)
-
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-
-;;; Codex IDE — correct VC package source
-
-(with-eval-after-load 'package-vc
-  (setf (alist-get "codex-ide"
-                   package-vc-selected-packages
-                   nil nil #'string=)
-        '(:url "https://github.com/dgillis/emacs-codex-ide"
-          :lisp-dir ".")))
+(require 'init-packages)
 
 ;;; Network proxy for Codex CLI
 
@@ -39,6 +27,7 @@
 
 (require 'init-codex)
 (require 'init-treesit)
+(require 'init-eldoc)
 (require 'init-lsp)
 (require 'init-python)
 (require 'init-python-workspace)
@@ -61,9 +50,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(clutch imenu-list codex-ide corfu doom-modeline evil evil-collection
-	    flymake-ruff markdown-mode pgsql telephone-line treemacs
-	    treemacs-evil))
+   '(clutch code-cells codex-ide comint-mime corfu doom-modeline drepl
+	    evil evil-collection flymake-ruff imenu-list markdown-mode
+	    modus-themes pgsql ruff-format treemacs treemacs-evil))
  '(safe-local-variable-values '((codex-ide-log-max-lines . 1000000))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

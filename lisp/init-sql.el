@@ -2,6 +2,13 @@
 
 (require 'sql)
 
+(use-package clutch
+  :commands (clutch-mode clutch-connect))
+
+;; Clutch's PostgreSQL backend is selected at connection time.
+(use-package pgsql
+  :defer t)
+
 (add-to-list 'process-coding-system-alist
              '("psql\\(\\.exe\\)?\\'"
                . (utf-8-unix . utf-8-unix)))
