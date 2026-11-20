@@ -22,14 +22,18 @@
 ;; Highlight current line.
 (add-hook 'prog-mode-hook #'hl-line-mode)
 
-;; Dark theme.
+;; Make Modus themes available to Customize.
 (use-package modus-themes
-  :demand t
-  :config
-  (load-theme 'modus-vivendi-tinted t))
+  :demand t)
 
 ;; Keep the toolbar enabled.
 (tool-bar-mode 1)
+
+;; Toggle the minimap from the Options menu.
+(define-key menu-bar-options-menu [canvas-minimap-mode]
+  '(menu-item "Canvas Minimap" canvas-minimap-mode
+              :help "Toggle the canvas minimap"
+              :button (:toggle . (bound-and-true-p canvas-minimap-mode))))
 
 ;;; Buffer tabs
 (global-tab-line-mode 1)

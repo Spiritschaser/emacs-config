@@ -30,6 +30,8 @@
   directory python backend buffer editor)
 (defvar python-workspace--sessions nil)
 (defvar-local python-workspace--session nil)
+(defvar-local python-workspace--last-cell nil
+  "Snapshot of the last cell submission, stored in the console buffer.")
 (defvar-local python-workspace--saved-locals nil)
 (defvar-local python-workspace--owned-cells nil)
 (defvar-local python-workspace--request-op nil)
@@ -68,6 +70,33 @@
     (when (and end (> excess 0))
       (let ((inhibit-read-only t))
         (delete-region (point-min) (min (+ (point-min) excess) end))))))
+
+(defun python-workspace--fontification-mode ()
+  "Set up Python syntax rules for a console fontification buffer."
+  (let ((python-indent-guess-indent-offset nil))
+    (delay-mode-hooks (python-mode))))
+
+(defun python-workspace--enable-input-fontification ()
+  "Use Python syntax highlighting for this dREPL console's input."
+  (setq-local comint-indirect-setup-function #'python-workspace--fontification-mode
+              comint-highlight-input nil)
+  (comint-fontify-input-mode 1))
+
+(defun python-workspace--fontify-echo (code)
+  "Return CODE with Python faces suitable for insertion as comint output."
+  (with-temp-buffer
+    (python-workspace--fontification-mode)
+    (insert code)
+    (font-lock-ensure)
+    (let ((result (buffer-substring-no-properties (point-min) (point-max)))
+          (start (point-min)))
+      (while (< start (point-max))
+        (let ((end (next-single-property-change start 'face nil (point-max)))
+              (face (get-text-property start 'face)))
+          (when face
+            (put-text-property (1- start) (1- end) 'font-lock-face face result))
+          (setq start end)))
+      result)))
 
 (defun python-workspace--configure-console (session)
   (setq-local python-workspace--session session
@@ -188,7 +217,8 @@ the URI payload; all protocol decoding and rendering stay in the package."
 (defun python-workspace--echo-input (code)
   "Display source CODE at the console prompt, preserving pending input."
   (comint-output-filter (get-buffer-process (current-buffer))
-                        (concat code (unless (string-suffix-p "\n" code) "\n")))
+                        (concat (python-workspace--fontify-echo code)
+                                (unless (string-suffix-p "\n" code) "\n")))
   ;; dREPL otherwise inserts a newline at the old prompt, before the code.
   (setq comint-last-prompt nil))
 
@@ -250,7 +280,8 @@ When ECHO is non-nil, display the source code before its output."
                   (let ((python-interpreter python)
                         (drepl-ipython-config '(InlineBackend.figure_formats ["png"])))
                     (setq drepl--current (drepl-ipython--create :buffer buffer))
-                    (drepl--init drepl--current)))
+                    (drepl--init drepl--current))
+                  (python-workspace--enable-input-fontification))
                 (python-workspace--wait buffer
                  (lambda () (eq (drepl--status drepl--current) 'ready))))
             (let ((python-shell-interpreter python)
@@ -446,17 +477,37 @@ With a prefix argument choose the environment and BACKEND again."
     (python-workspace--send session (buffer-substring-no-properties start end) t)
     (python-workspace--display session)))
 
+(defun python-workspace--send-cell (start end)
+  "Send the code between START and END and remember it for repetition."
+  (let ((session (python-workspace--current))
+        (code (buffer-substring-no-properties start end)))
+    (python-workspace--send session code t)
+    (with-current-buffer (python-workspace--session-buffer session)
+      (setq python-workspace--last-cell code))
+    (python-workspace--display session)))
+
 (defun python-workspace-run-cell ()
   "Execute the cell at point, even if a region is active."
   (interactive)
   (pcase-let ((`(,start ,end) (code-cells--bounds 1 nil t)))
-    (python-workspace-send-region start end)))
+    (python-workspace--send-cell start end)))
 
 (defun python-workspace-run-cell-and-step ()
   "Execute the current cell and move to the next cell."
   (interactive)
   (python-workspace-run-cell)
   (code-cells-forward-cell))
+
+(defun python-workspace-repeat-cell ()
+  "Execute the last submitted cell again in the current Workspace."
+  (interactive)
+  (let* ((session (python-workspace--current))
+         (code (buffer-local-value 'python-workspace--last-cell
+                                   (python-workspace--session-buffer session))))
+    (unless code
+      (user-error "No cell has been submitted in this Workspace yet"))
+    (python-workspace--send session code t)
+    (python-workspace--display session)))
 
 (defun python-workspace-run-file ()
   "Execute the entire source buffer, including unsaved edits, in IPython.
@@ -516,7 +567,7 @@ Use `python-workspace-stop' to explicitly discard the session."
           (setq python-workspace--owned-cells t)
           (code-cells-mode 1))
         (setq-local code-cells-eval-region-commands
-                    '((python-workspace-mode . python-workspace-send-region))))
+                    '((python-workspace-mode . python-workspace--send-cell))))
     (dolist (entry python-workspace--saved-locals)
       (if (cadr entry) (set (car entry) (caddr entry))
         (kill-local-variable (car entry))))

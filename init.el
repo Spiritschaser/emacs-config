@@ -29,6 +29,7 @@
 (require 'init-treesit)
 (require 'init-eldoc)
 (require 'init-lsp)
+(require 'init-dart)
 (require 'init-python)
 (require 'init-python-workspace)
 (require 'init-sql)
@@ -49,10 +50,21 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cua-mode t)
+ '(custom-enabled-themes '(modus-vivendi))
+ '(custom-safe-themes
+   '("967c23e9ba179b80560774419f081df22e7674aac23c5c550b817e4a1ce7d058"
+     default))
  '(package-selected-packages
-   '(clutch code-cells codex-ide comint-mime corfu doom-modeline drepl
-	    evil evil-collection flymake-ruff imenu-list markdown-mode
-	    modus-themes pgsql ruff-format treemacs treemacs-evil))
+   '(canvas-minimap clutch code-cells codex-ide comint-mime corfu dart-mode
+		    doom-modeline drepl evil evil-collection
+		    flymake-ruff imenu-list markdown-mode modus-themes
+		    pgsql ruff-format treemacs treemacs-evil))
+ '(package-vc-selected-packages
+   '((canvas-minimap :vc-backend Git :url
+		     "https://github.com/Daskeladden/canvas-minimap")
+     (codex-ide :url "https://github.com/dgillis/emacs-codex-ide"
+		:lisp-dir ".")))
  '(safe-local-variable-values '((codex-ide-log-max-lines . 1000000))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

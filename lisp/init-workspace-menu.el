@@ -1,6 +1,7 @@
 ;;; init-workspace-menu.el --- Mouse menus for everyday work -*- lexical-binding: t; -*-
 
 (require 'easymenu)
+(require 'init-dart)
 (require 'init-python-workspace)
 
 (defun my/sql--change-editing-mode (mode)
@@ -144,16 +145,32 @@
   '(menu-item "SQL" nil :visible (derived-mode-p 'sql-mode)
               :filter my/workspace-menu--sql))
 
+(define-key-after my/workspace-menu-map [dart]
+  `(menu-item "Dart / Flutter" ,my/dart-menu-map :visible (my/dart-menu-visible-p)))
+
 (define-key-after global-map [menu-bar my-workspace]
   (cons "Работа" my/workspace-menu-map))
 
 (defun my/workspace-context-menu (menu _click)
   "Append work commands without replacing standard context-menu entries."
+  (when (derived-mode-p 'codex-ide-session-mode)
+    (define-key-after menu [my-codex-stop]
+      '(menu-item "Остановить Codex" codex-ide-stop
+                  :enable (commandp 'codex-ide-stop)))
+    (define-key-after menu [my-codex-continue]
+      '(menu-item "Продолжить последний разговор" codex-ide-continue
+                  :enable (commandp 'codex-ide-continue)))
+    (define-key-after menu [my-codex-reset]
+      '(menu-item "Сбросить сессию — новый разговор" codex-ide-reset-current-session
+                  :enable (commandp 'codex-ide-reset-current-session))))
   (when (derived-mode-p 'sql-mode)
     (define-key-after menu [my-sql-editing-mode]
       (if (derived-mode-p 'clutch-mode)
           '(menu-item "Вернуться в обычный SQL-режим" my/sql-use-standard-mode)
         '(menu-item "Работать через Clutch…" my/sql-use-clutch))))
+  (when (my/dart-menu-visible-p)
+    (define-key-after menu [my-dart]
+      `(menu-item "Dart / Flutter" ,my/dart-menu-map)))
   (define-key-after menu [my-workspace] (cons "Работа" my/workspace-menu-map))
   menu)
 
