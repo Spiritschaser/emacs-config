@@ -56,8 +56,8 @@
    '("967c23e9ba179b80560774419f081df22e7674aac23c5c550b817e4a1ce7d058"
      default))
  '(package-selected-packages
-   '(canvas-minimap clutch code-cells codex-ide comint-mime corfu dart-mode
-		    doom-modeline drepl evil evil-collection
+   '(canvas-minimap clutch code-cells codex-ide comint-mime corfu
+		    dart-mode doom-modeline drepl evil evil-collection
 		    flymake-ruff imenu-list markdown-mode modus-themes
 		    pgsql ruff-format treemacs treemacs-evil))
  '(package-vc-selected-packages

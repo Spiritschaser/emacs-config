@@ -9,8 +9,17 @@
     "paste" "search")
   "Standard toolbar icons to replace with monochrome versions.")
 
+(defconst my/toolbar-labels
+  '((open-directory . "Dir")
+    (kill-buffer . "Close")
+    (undo . "Undo")
+    (cut . "Cut")
+    (copy . "Copy")
+    (paste . "Paste"))
+  "Explicit labels for standard buttons that lack them.")
+
 (defun my/toolbar-apply ()
-  "Use monochrome PBM icons for the standard Emacs toolbar."
+  "Set monochrome PBM icons and short labels for the standard toolbar."
   (interactive)
 
   (let* ((fg (face-foreground 'tool-bar nil t))
@@ -24,7 +33,8 @@
        (when (and (consp binding)
                   (eq (car binding) 'menu-item)
                   (memq :image binding))
-         (let* ((original (prin1-to-string
+         (let* ((label (alist-get key my/toolbar-labels))
+                (original (prin1-to-string
                            (cadr (memq :image binding))))
                 (icon
                  (cl-find-if
@@ -39,16 +49,20 @@
                     (concat icon ".pbm")
                     (append image-load-path load-path)))))
 
-           (when file
+           (when (or label file)
              (let ((item (copy-tree binding)))
-               (setcar
-                (cdr (memq :image item))
-                `(find-image
-                  '((:type pbm
-                     :file ,file
-                     :foreground ,fg
-                     :background ,bg))
-                  t))
+               (when label
+                 (setcdr (nthcdr 2 item)
+                         (plist-put (nthcdr 3 item) :label label)))
+               (when file
+                 (setcar
+                  (cdr (memq :image item))
+                  `(find-image
+                    '((:type pbm
+                       :file ,file
+                       :foreground ,fg
+                       :background ,bg))
+                    t)))
                (push (cons key item) changes))))))
 
      map)
@@ -66,7 +80,7 @@
     (force-mode-line-update t)
 
     (when (called-interactively-p 'interactive)
-      (message "Updated %d toolbar icons" (length changes)))))
+      (message "Updated %d toolbar buttons" (length changes)))))
 
 (defun my/toolbar-setup ()
   "Configure a dark monochrome toolbar."
@@ -88,10 +102,10 @@
 
 ;;; Additional toolbar commands
 
-(defun my/toolbar-add-button (key command icon label)
+(defun my/toolbar-add-button (key command icon label help)
   "Add a monochrome toolbar button.
-KEY identifies it, COMMAND is its action,
-ICON is a standard Emacs PBM icon."
+KEY identifies it, COMMAND is its action, and ICON is a standard Emacs PBM
+icon.  LABEL is the short visible caption and HELP is the tooltip."
   (when-let* ((file (locate-file
                      (concat icon ".pbm")
                      (append image-load-path load-path))))
@@ -102,7 +116,8 @@ ICON is a standard Emacs PBM icon."
         (vector key)
         `(menu-item
           ,label ,command
-          :help ,label
+          :label ,label
+          :help ,help
           :image (find-image
                   '((:type pbm
                      :file ,file
@@ -113,27 +128,27 @@ ICON is a standard Emacs PBM icon."
 ;; M-:  Evaluate Elisp.
 (my/toolbar-add-button
  'my-eval 'eval-expression
- "preferences" "M-:  Evaluate expression")
+ "preferences" "Eval" "M-:  Evaluate expression")
 
 ;; M-x  Execute command.
 (my/toolbar-add-button
  'my-command 'execute-extended-command
- "help" "M-x  Execute command")
+ "help" "Command" "M-x  Execute command")
 
 ;; Close the selected window, not the buffer.
 (my/toolbar-add-button
  'my-close-window 'delete-window
- "close" "Close current window")
+ "close" "Close Window" "Close current window")
 
 ;; Toggle Treemacs.
 (my/toolbar-add-button
  'my-treemacs 'treemacs
- "diropen" "Show / Hide Treemacs")
+ "diropen" "Treemacs" "Show / Hide Treemacs")
 
 ;; Toggle the Imenu outline sidebar.
 (my/toolbar-add-button
  'my-outline 'imenu-list-smart-toggle
- "index" "Структура файла (C-c o)")
+ "index" "Outline" "Структура файла (C-c o)")
 
 ;; Refresh toolbar.
 (when (fboundp 'tool-bar--flush-cache)

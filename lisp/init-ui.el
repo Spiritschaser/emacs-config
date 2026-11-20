@@ -29,10 +29,21 @@
 ;; Keep the toolbar enabled.
 (tool-bar-mode 1)
 
+;; Install the minimap on Emacs versions that support canvas images.
+(when (and (memq 'canvas image-types)
+           (not (package-installed-p 'canvas-minimap)))
+  (with-demoted-errors "Canvas Minimap installation failed: %S"
+    (require 'package-vc)
+    (let ((package-vc-register-as-project nil))
+      (package-vc-install
+       '(canvas-minimap :vc-backend Git
+                        :url "https://github.com/Daskeladden/canvas-minimap")))))
+
 ;; Toggle the minimap from the Options menu.
 (define-key menu-bar-options-menu [canvas-minimap-mode]
   '(menu-item "Canvas Minimap" canvas-minimap-mode
               :help "Toggle the canvas minimap"
+              :enable (commandp 'canvas-minimap-mode)
               :button (:toggle . (bound-and-true-p canvas-minimap-mode))))
 
 ;;; Buffer tabs
