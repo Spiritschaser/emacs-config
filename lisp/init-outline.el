@@ -7,6 +7,17 @@
   (unless (derived-mode-p 'codex-ide-session-mode)
     (apply update args)))
 
+(defun my/imenu-list-follow-buffer ()
+  "Refresh a visible Outline when the selected buffer changes."
+  (when (and imenu-list-auto-update
+             (get-buffer-window imenu-list-buffer-name))
+    (with-current-buffer (window-buffer (selected-window))
+      (unless (and imenu-list--last-location
+                   (eq (marker-buffer imenu-list--last-location)
+                       (current-buffer)))
+        ;; The package's idle update compares only numeric positions.
+        (imenu-list-update t)))))
+
 (use-package imenu-list
   :ensure t
   :bind ("C-c o" . imenu-list-smart-toggle)
@@ -15,7 +26,8 @@
   (imenu-list-size 32)
   (imenu-list-auto-resize nil)
   :config
-  (advice-add 'imenu-list-update :around #'my/imenu-list-skip-codex))
+  (advice-add 'imenu-list-update :around #'my/imenu-list-skip-codex)
+  (add-hook 'post-command-hook #'my/imenu-list-follow-buffer))
 
 (defun my/sql-imenu-sections ()
   "Include named SQL comments alongside the standard object index."
