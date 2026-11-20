@@ -12,6 +12,24 @@
 
 ;;; init.el --- Main Emacs configuration -*- lexical-binding: t; -*-
 
+(defun my/import-bash-path ()
+  "Import PATH from interactive Bash on Linux."
+  (when (eq system-type 'gnu/linux)
+    (when-let* ((bash (executable-find "bash")))
+      (with-temp-buffer
+        ;; Delimit PATH so output from .bashrc does not pollute it.
+        (when (eq 0 (ignore-error file-error
+                      (call-process bash nil (list (current-buffer) nil) nil
+                                    "-ic" "printf '\\0%s\\0' \"$PATH\"")))
+          (goto-char (point-max))
+          (when (re-search-backward "\0\\([^\0]+\\)\0" nil t)
+            (let ((path (match-string-no-properties 1)))
+              (setenv "PATH" path)
+              (setq exec-path
+                    (append (parse-colon-path path) (list exec-directory))))))))))
+
+(my/import-bash-path)
+
 (add-to-list 'load-path
              (expand-file-name "lisp" user-emacs-directory))
 

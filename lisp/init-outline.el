@@ -2,13 +2,20 @@
 
 (require 'imenu)
 
+(defun my/imenu-list-skip-codex (update &rest args)
+  "Keep the current outline when a Codex session buffer is selected."
+  (unless (derived-mode-p 'codex-ide-session-mode)
+    (apply update args)))
+
 (use-package imenu-list
   :ensure t
   :bind ("C-c o" . imenu-list-smart-toggle)
   :custom
   (imenu-list-position 'right)
   (imenu-list-size 32)
-  (imenu-list-auto-resize nil))
+  (imenu-list-auto-resize nil)
+  :config
+  (advice-add 'imenu-list-update :around #'my/imenu-list-skip-codex))
 
 (defun my/sql-imenu-sections ()
   "Include named SQL comments alongside the standard object index."
