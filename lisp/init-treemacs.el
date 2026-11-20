@@ -48,21 +48,27 @@
 (add-hook 'treemacs-mode-hook
           #'my/treemacs-native-context-menu)
 
-;;; Use Arial for the file tree
+;;; Use Calibri or PT Sans Narrow for the file tree
 
 (require 'face-remap)
+(require 'seq)
 
 (defvar-local my/treemacs-font-cookie nil
   "Face remapping cookie for the Treemacs font.")
 
-(defun my/treemacs-use-arial ()
-  "Use Arial in this Treemacs buffer, preserving size and icon faces."
+(defun my/treemacs-set-font ()
+  "Use the first available preferred font in this Treemacs buffer."
   (when my/treemacs-font-cookie
-    (face-remap-remove-relative my/treemacs-font-cookie))
-  (setq my/treemacs-font-cookie
-        (face-remap-add-relative 'default :family "Calibri")))
+    (face-remap-remove-relative my/treemacs-font-cookie)
+    (setq my/treemacs-font-cookie nil))
+  (when (display-graphic-p)
+    (when-let* ((family (seq-find (lambda (family)
+                                  (find-font (font-spec :family family)))
+                                '("Calibri" "PT Sans Narrow"))))
+      (setq my/treemacs-font-cookie
+            (face-remap-add-relative 'default :family family)))))
 
-(add-hook 'treemacs-mode-hook #'my/treemacs-use-arial)
+(add-hook 'treemacs-mode-hook #'my/treemacs-set-font)
 
 ;;; Keep scroll bars out of the file tree
 
@@ -79,7 +85,7 @@
 (dolist (buffer (buffer-list))
   (with-current-buffer buffer
     (when (derived-mode-p 'treemacs-mode)
-      (my/treemacs-use-arial)
+      (my/treemacs-set-font)
       (my/treemacs-no-scroll-bars))))
 
 (provide 'init-treemacs)

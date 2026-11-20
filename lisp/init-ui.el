@@ -22,9 +22,9 @@
 ;; Highlight current line.
 (add-hook 'prog-mode-hook #'hl-line-mode)
 
-;; Make Modus themes available to Customize.
+;; Let Customize load the saved theme before Modus registers its themes.
 (use-package modus-themes
-  :demand t)
+  :defer t)
 
 ;; Keep the toolbar enabled.
 (tool-bar-mode 1)
