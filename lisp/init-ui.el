@@ -39,6 +39,32 @@
        '(canvas-minimap :vc-backend Git
                         :url "https://github.com/Daskeladden/canvas-minimap")))))
 
+(defconst my/canvas-minimap-ignored-modes
+  '(codex-ide-session-mode imenu-list-major-mode messages-buffer-mode)
+  "Buffer modes that should leave the previous minimap visible.")
+
+(defun my/canvas-minimap-keep-source (update frame)
+  "Keep FRAME's minimap on its previous source while a panel has focus."
+  (with-current-buffer (window-buffer (frame-selected-window frame))
+    (unless (derived-mode-p my/canvas-minimap-ignored-modes)
+      (funcall update frame))))
+
+(defun my/canvas-minimap-live-source (state)
+  "Return STATE when its window still displays the buffer it maps."
+  (when state
+    (let ((window (canvas-minimap--state-window state)))
+      (when (and (window-live-p window)
+                 (eq (window-buffer window) (canvas-minimap--state-buffer state)))
+        state))))
+
+(with-eval-after-load 'canvas-minimap
+  (dolist (mode my/canvas-minimap-ignored-modes)
+    (add-to-list 'canvas-minimap-exclude-modes mode))
+  (advice-add 'canvas-minimap--update-per-frame :around
+              #'my/canvas-minimap-keep-source)
+  (advice-add 'canvas-minimap--state-at :filter-return
+              #'my/canvas-minimap-live-source))
+
 ;; Toggle the minimap from the Options menu.
 (define-key menu-bar-options-menu [canvas-minimap-mode]
   '(menu-item "Canvas Minimap" canvas-minimap-mode
