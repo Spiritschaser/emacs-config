@@ -61,6 +61,9 @@
 (require 'init-modeline)
 (require 'init-fonts)
 (require 'init-workspace-menu)
+(require 'init-org)
+(require 'init-org-drawing)
+(require 'init-org-babel)
 
 ;;; init.el ends here
 (custom-set-variables
@@ -75,11 +78,14 @@
      default))
  '(package-selected-packages
    '(canvas-minimap clutch code-cells codex-ide comint-mime corfu
-		    dart-mode doom-modeline drepl evil evil-collection
-		    flymake-ruff imenu-list markdown-mode modus-themes
-		    pgsql ruff-format treemacs treemacs-evil))
+		    dart-mode doom-modeline drepl edraw evil
+		    evil-collection flymake-ruff imenu-list
+		    markdown-mode modus-themes org-mindmap pgsql
+		    ruff-format treemacs treemacs-evil))
  '(package-vc-selected-packages
-   '((canvas-minimap :vc-backend Git :url
+   '((edraw :url "https://github.com/misohena/el-easydraw.git" :main-file
+	    "edraw.el")
+     (canvas-minimap :vc-backend Git :url
 		     "https://github.com/Daskeladden/canvas-minimap")
      (codex-ide :url "https://github.com/dgillis/emacs-codex-ide"
 		:lisp-dir ".")))

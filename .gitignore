@@ -48,3 +48,10 @@ __pycache__/
 .venv/
 venv/
 .ipynb_checkpoints/
+
+# Local Org Workspace tools and LaTeX preview cache
+/tools/graphviz/
+/tools/java/
+/tools/plantuml/*.jar
+/tools/tinytex/
+/ltximg/
