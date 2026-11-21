@@ -1,0 +1,104 @@
+;; -*- mode: emacs-lisp; lexical-binding:t; coding: utf-8-emacs; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Sun Nov 22 01:37:17 2026
+;; Desktop file format version 208
+;; Emacs version 32.0.50
+
+;; Global section:
+(setq desktop-saved-frameset [frameset 1 (1795300637380553648 . 1000000000) (desktop . "208") "dan@ubuntu" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font . "-SRC -Hack-regular-normal-normal-*-13-*-*-*-m-0-iso10646-1") (border-width . 0) (internal-border-width . 0) (child-frame-border-width) (right-divider-width . 5) (bottom-divider-width . 0) (vertical-scroll-bars) (horizontal-scroll-bars) (foreground-color . "#ffffff") (background-color . "#000000") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing . 0) (left-fringe . 8) (right-fringe . 8) (no-special-glyphs) (scroll-bar-foreground . "#646464") (scroll-bar-background . "#000000") (menu-bar-lines . 1) (tab-bar-lines . 0) (tool-bar-lines . 1) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 16) (scroll-bar-height . 16) (alpha) (alpha-background) (borders-respect-alpha-background) (no-focus-on-map) (no-accept-focus) (fullscreen . maximized) (visibility . t) (use-frame-synchronization) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "#ffffff") (font-parameter) (sticky) (shaded) (last-focus-update . t) (dnd-root-window-position) (my/saved-window-config) (frameset--id . "8B04-DD94-3C2C-F5A2") (frameset--mini t . t) (icon-name) (unsplittable) (display . ":0") (left . 768) (top . 0) (width . 238) (height . 54) (explicit-name) (modeline . t) (buffer-list "API.org" "wine.py<schemas>" "wines.py" "wine.py<models>" "catalog.py" "wine_detail_screen.dart" "wine_list_screen.dart")) ((min-height . 9) (min-width . 52) (min-height-ignore . 9) (min-width-ignore . 14) (min-height-safe . 2) (min-width-safe . 6) (min-pixel-height . 153) (min-pixel-width . 416) (min-pixel-height-ignore . 153) (min-pixel-width-ignore . 112) (min-pixel-height-safe . 34) (min-pixel-width-safe . 48)) hc (pixel-width . 1920) (pixel-height . 903) (total-width . 240) (total-height . 53) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 256) (pixel-height . 903) (total-width . 32) (total-height . 53) (normal-height . 1.0) (normal-width . 0.13333333333333336) (parameters (window-side . left) (window-slot . 0)) (buffer " *Treemacs-Buffer-#<frame *GNU Emacs* - GNU Emacs at ubuntu 0x560bc9fe2060>" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 nil nil 0 nil nil) (vscroll . 0) (dedicated . t) (point . 377) (start . 1))) (hc (last . t) (pixel-width . 1664) (pixel-height . 903) (total-width . 208) (total-height . 53) (normal-height . 1.0) (normal-width . 0.8666666666666667) (combination-limit . t) (leaf (pixel-width . 1136) (pixel-height . 903) (total-width . 142) (total-height . 53) (normal-height . 1.0) (normal-width . 0.6859903381642513) (buffer "API.org" (selected . t) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 0 t nil) (vscroll . 0) (dedicated) (point . 6377) (start . 4143)) (prev-buffers ("*scratch*" 1 148) ("wine_list_screen.dart" 1 1) ("wine_detail_screen.dart" 1 675) ("catalog.py" 107 1195) ("wine.py<models>" 6875 8069) ("wines.py" 1 1944) ("wine.py<schemas>" 3758 4684))) (vc (last . t) (pixel-width . 528) (pixel-height . 903) (total-width . 66) (total-height . 53) (normal-height . 1.0) (normal-width . 0.31400966183574885) (combination-limit) (leaf (pixel-width . 528) (pixel-height . 444) (total-width . 66) (total-height . 26) (normal-height . 0.5) (normal-width . 1.0) (buffer "*Ilist*" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 0 t nil) (vscroll . 0) (dedicated . t) (point . 13) (start . 1))) (leaf (last . t) (pixel-width . 528) (pixel-height . 459) (total-width . 66) (total-height . 27) (normal-height . 0.5) (normal-width . 1.0) (buffer "*codex[quiz.let.wine]*" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 0 t nil) (vscroll . 0) (dedicated) (point . 107978) (start . 107487)))))))])
+(setq my/desktop-tools '((treemacs " *Treemacs-Buffer-#<frame *GNU Emacs* - GNU Emacs at ubuntu 0x560bc9fe2060>" "/home/dan/StudioProjects/quiz.let.wine/backend/") (codex "*codex[quiz.let.wine]*" "/home/dan/StudioProjects/quiz.let.wine" "01a2000b-d31b-7322-8c12-3683c304b017") (imenu "*Ilist*")))
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring nil)
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history nil)
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 208
+  "/home/dan/StudioProjects/quiz.let.wine/backend/API.org"
+  "API.org"
+  'org-mode
+  '(font-lock-mode edraw-org-link-image-mode org-mindmap-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  6377
+  '(6378 nil)
+  nil
+  nil
+  '((tab-width . 8) (buffer-display-time 1795300546660981371 . 1000000000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode) (truncate-lines . t))
+  '((mark-ring (5548 5515 5548))))
+
+(desktop-create-buffer 208
+  "/home/dan/StudioProjects/quiz.let.wine/backend/app/schemas/wine.py"
+  "wine.py"
+  'python-ts-mode
+  '(eldoc-mode font-lock-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  4684
+  '(4684 nil)
+  nil
+  nil
+  '((tab-width . 8) (indent-tabs-mode) (buffer-display-time 1795300463895619726 . 1000000000) (buffer-file-coding-system . undecided-unix))
+  '((mark-ring (4684))))
+
+(desktop-create-buffer 208
+  "/home/dan/StudioProjects/quiz.let.wine/backend/app/api/routes/wines.py"
+  "wines.py"
+  'python-ts-mode
+  '(eldoc-mode font-lock-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  1944
+  '(1944 nil)
+  nil
+  nil
+  '((tab-width . 8) (indent-tabs-mode) (buffer-display-time 1795300465100897351 . 1000000000) (buffer-file-coding-system . undecided-unix) (overwrite-mode))
+  '((mark-ring (6129 6841 6161 439))))
+
+(desktop-create-buffer 208
+  "/home/dan/StudioProjects/quiz.let.wine/backend/app/models/wine.py"
+  "wine.py"
+  'python-ts-mode
+  '(eldoc-mode font-lock-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  8069
+  '(8189 t)
+  nil
+  nil
+  '((tab-width . 8) (indent-tabs-mode) (buffer-display-time 1795300466061369265 . 1000000000) (buffer-file-coding-system . utf-8-unix))
+  '((mark-ring (1297))))
+
+(desktop-create-buffer 208
+  "/home/dan/StudioProjects/quiz.let.wine/backend/app/services/catalog.py"
+  "catalog.py"
+  'clutch-mode
+  '(font-lock-mode eldoc-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  1195
+  '(1195 nil)
+  nil
+  nil
+  '((tab-width . 4) (indent-tabs-mode) (buffer-display-time 1795300466837794910 . 1000000000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode))
+  '((mark-ring (1195 1196))))
+
+(desktop-create-buffer 208
+  "/home/dan/StudioProjects/quiz.let.wine/lib/wine_detail_screen.dart"
+  "wine_detail_screen.dart"
+  'dart-mode
+  '(font-lock-mode eglot-semantic-tokens-mode eglot-inlay-hints-mode eldoc-mode flymake-mode refactor-suggestion-mode eglot--managed-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  675
+  '(675 nil)
+  nil
+  nil
+  '((tab-width . 2) (indent-tabs-mode) (buffer-display-time 1795300467471206336 . 1000000000) (buffer-file-coding-system . utf-8-unix) (fill-column . 80))
+  '((mark-ring (675))))
+
+(desktop-create-buffer 208
+  "/home/dan/StudioProjects/quiz.let.wine/lib/wine_list_screen.dart"
+  "wine_list_screen.dart"
+  'dart-mode
+  '(eglot-semantic-tokens-mode eglot-inlay-hints-mode eldoc-mode flymake-mode refactor-suggestion-mode eglot--managed-mode font-lock-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  1
+  '(1 nil)
+  nil
+  nil
+  '((tab-width . 2) (indent-tabs-mode) (buffer-display-time 1795300469075166345 . 1000000000) (buffer-file-coding-system . utf-8-unix) (fill-column . 80))
+  '((mark-ring nil)))
+

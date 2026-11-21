@@ -127,5 +127,7 @@ Refuse a conflicting or partially applied patch before loading Codex."
 (when server-use-tcp
   (setenv "EMACS_SERVER_FILE" (emacs-server-connection-file)))
 
+(require 'codex-prompt-encoding)
+
 (provide 'init-codex)
 ;;; init-codex.el ends here

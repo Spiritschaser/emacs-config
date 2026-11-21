@@ -65,6 +65,8 @@
 (require 'init-org-drawing)
 (require 'init-org-babel)
 
+(require 'init-desktop)
+
 ;;; init.el ends here
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
