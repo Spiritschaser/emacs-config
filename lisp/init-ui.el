@@ -40,7 +40,7 @@
                         :url "https://github.com/Daskeladden/canvas-minimap")))))
 
 (defconst my/canvas-minimap-ignored-modes
-  '(codex-ide-session-mode imenu-list-major-mode messages-buffer-mode)
+  '(codex-ide-session-mode imenu-list-major-mode messages-buffer-mode treemacs-mode)
   "Buffer modes that should leave the previous minimap visible.")
 
 (defun my/canvas-minimap-keep-source (update frame)
@@ -106,6 +106,10 @@
         (set-frame-parameter
          frame 'my/saved-window-config
          (current-window-configuration))
+        (when (fboundp 'treemacs-get-local-window)
+          (let ((tree-window (treemacs-get-local-window)))
+            (when (and tree-window (not (eq tree-window window)))
+              (delete-window tree-window))))
         (delete-other-windows window)))))
 
 (with-eval-after-load 'tab-line
