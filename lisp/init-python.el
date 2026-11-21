@@ -2,21 +2,46 @@
 
 (require 'treesit)
 
+(defun my/python-string-sql-language (string)
+  "Return the SQL language for a marked or SQL-looking Python STRING."
+  (let* ((quote (treesit-node-child string 0 t))
+         (parent (treesit-node-parent string)))
+    (when (or (save-excursion
+                (goto-char (treesit-node-end quote))
+                (skip-chars-forward " \t\r\n\f\v")
+                (let ((case-fold-search t))
+                  (looking-at-p "\\(?:--sql\\|select\\|with\\|insert\\)\\_>")))
+              (and (equal (treesit-node-type parent) "assignment")
+                   (treesit-node-eq string
+                                    (treesit-node-child-by-field-name parent "right"))
+                   (let ((left (treesit-node-child-by-field-name parent "left"))
+                         (case-fold-search nil))
+                     (and (equal (treesit-node-type left) "identifier")
+                          (string-match-p "\\`\\(?:sql\\|.*_sql\\)\\'"
+                                          (treesit-node-text left t))
+                          (string-match-p "\\`[rR]?\\(?:\"\"\"\\|'''\\)\\'"
+                                          (treesit-node-text quote t))))))
+      'sql)))
+
+(defun my/python-string-sql-ranges (string _offset)
+  "Return the literal portions of STRING for the embedded SQL parser."
+  (delq nil
+        (mapcar (lambda (child)
+                  (when (equal (treesit-node-type child) "string_content")
+                    (cons (treesit-node-start child) (treesit-node-end child))))
+                (treesit-node-children string t))))
+
 (defun my/python-enable-sql-font-lock ()
-  "Highlight SQL in triple-quoted strings assigned to sql or *_sql."
+  "Highlight embedded SQL in Python strings."
   (when (and treesit-primary-parser (treesit-language-available-p 'sql))
     (setq-local treesit-range-settings
                 (append
                  treesit-range-settings
                  (treesit-range-rules
-                  :host 'python :embed 'sql :local t
-                  '(((assignment
-                      left: (identifier) @_name
-                      right: (string
-                              (string_start) @_quote
-                              (string_content) @sql))
-                     (:match "\\`\\(?:sql\\|.*_sql\\)\\'" @_name)
-                     (:match "\\`[rR]?\\(?:\"\"\"\\|'''\\)\\'" @_quote))))))
+                  :host 'python :embed #'my/python-string-sql-language :local t
+                  :range-fn #'my/python-string-sql-ranges
+                  "(string (string_start) . (string_content) (string_end))
+                   @language @sql")))
     (setq-local treesit-font-lock-settings
                 (append
                  treesit-font-lock-settings

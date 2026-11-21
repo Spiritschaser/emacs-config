@@ -83,7 +83,8 @@
 		     "https://github.com/Daskeladden/canvas-minimap")
      (codex-ide :url "https://github.com/dgillis/emacs-codex-ide"
 		:lisp-dir ".")))
- '(safe-local-variable-values '((codex-ide-log-max-lines . 1000000))))
+ '(safe-local-variable-values '((codex-ide-log-max-lines . 1000000)))
+ '(scroll-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
