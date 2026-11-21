@@ -1,5 +1,14 @@
 ;;; init-treesit.el --- Tree-sitter -*- lexical-binding: t; -*-
 
+(require 'treesit)
+
+(add-to-list 'treesit-language-source-alist
+             '(python "https://github.com/tree-sitter/tree-sitter-python.git"
+                      "v0.25.0"))
+(add-to-list 'treesit-language-source-alist
+             '(sql "https://github.com/DerekStride/tree-sitter-sql.git"
+                   "gh-pages"))
+
 ;; Detailed syntax highlighting.
 (setq treesit-font-lock-level 4)
 
