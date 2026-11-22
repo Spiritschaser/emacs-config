@@ -58,6 +58,7 @@
         state))))
 
 (with-eval-after-load 'canvas-minimap
+  (setq canvas-minimap-glyph-auto-generate nil)
   (dolist (mode my/canvas-minimap-ignored-modes)
     (add-to-list 'canvas-minimap-exclude-modes mode))
   (advice-add 'canvas-minimap--update-per-frame :around
