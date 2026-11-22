@@ -2,6 +2,7 @@
 
 (require 'easymenu)
 (require 'init-dart)
+(require 'init-clutch-workspace)
 (require 'init-python-workspace)
 
 (defun my/sql--change-editing-mode (mode)
@@ -133,6 +134,24 @@
       (car (nth 2 map)))
     map))
 
+(defun my/workspace-menu--clutch (_)
+  "List saved Clutch connections and workspace actions."
+  (easy-menu-create-menu
+   "Clutch"
+   (append
+    (if clutch-connection-alist
+        (mapcar (lambda (entry)
+                  (let ((name (car entry)))
+                    (vector name
+                            (lambda () (interactive)
+                              (my/clutch-workspace-open name))
+                            t)))
+                clutch-connection-alist)
+      '(["Нет сохранённых подключений" ignore nil]))
+    '("--"
+      ["Выйти из рабочего пространства Clutch" my/clutch-workspace-close
+       :active (my/clutch-workspace--current)]))))
+
 (defvar my/workspace-menu-map
   (let ((map (make-sparse-keymap "Работа")))
     (define-key-after map [codex]
@@ -140,6 +159,9 @@
     (define-key-after map [python]
       '(menu-item "Python Workspace" nil :filter my/workspace-menu--python))
     map))
+
+(define-key-after my/workspace-menu-map [clutch]
+  '(menu-item "Clutch" nil :filter my/workspace-menu--clutch))
 
 (define-key-after my/workspace-menu-map [sql]
   '(menu-item "SQL" nil :visible (derived-mode-p 'sql-mode)
