@@ -10,6 +10,8 @@
 (declare-function treemacs-select-window "treemacs" (&optional arg))
 (autoload 'my/clutch-connected-p "init-sql")
 (declare-function clutch-query-console "clutch-query" (target))
+(declare-function clutch-query-sqlite-file "clutch-query" (file))
+(declare-function clutch-db-sqlite-conn-handle "clutch-db-sqlite" (conn))
 (declare-function clutch--await-background-request "clutch-connection" (conn))
 (declare-function clutch--refuse-while-running "clutch-connection" (conn))
 (declare-function clutch--execute "clutch-query" (sql &optional result-context region))
@@ -45,23 +47,33 @@
   (clutch--refuse-while-running connection)
   (clutch--await-background-request connection)
   (clutch--refuse-while-running connection)
-  (if (eq (clutch-db-backend-key connection) 'pg)
-      ;; The PostgreSQL picker only lists the current schema. Use its
-      ;; metadata path so opening the navigator doesn't start a transaction.
-      (mapcar
-       (lambda (row)
-         (list :schema (nth 0 row) :name (nth 1 row) :type (nth 2 row)))
-       (clutch-db-pg--metadata-rows
-        (clutch-db-pg--exec
-         connection
-         "SELECT table_schema, table_name,
+  (pcase (clutch-db-backend-key connection)
+    ('pg
+     ;; The PostgreSQL picker only lists the current schema. Use its
+     ;; metadata path so opening the navigator doesn't start a transaction.
+     (mapcar
+      (lambda (row)
+        (list :schema (nth 0 row) :name (nth 1 row) :type (nth 2 row)))
+      (clutch-db-pg--metadata-rows
+       (clutch-db-pg--exec
+        connection
+        "SELECT table_schema, table_name,
                  CASE table_type WHEN 'VIEW' THEN 'VIEW' ELSE 'TABLE' END
           FROM information_schema.tables
           WHERE table_schema <> 'information_schema'
             AND left(table_schema, 3) <> 'pg_'
-          ORDER BY table_schema, table_name")))
-    (seq-filter (lambda (entry) (member (plist-get entry :type) '("TABLE" "VIEW")))
-                (clutch--browseable-object-entries connection t))))
+          ORDER BY table_schema, table_name"))))
+    ('sqlite
+     ;; Clutch's SQLite table listing omits views.
+     (mapcar (lambda (row)
+               (list :schema "main" :name (car row) :type (cadr row)))
+             (sqlite-select (clutch-db-sqlite-conn-handle connection)
+                            "SELECT name, upper(type) FROM main.sqlite_schema
+                             WHERE type IN ('table', 'view')
+                               AND name NOT GLOB 'sqlite_*'")))
+    (_
+     (seq-filter (lambda (entry) (member (plist-get entry :type) '("TABLE" "VIEW")))
+                 (clutch--browseable-object-entries connection t)))))
 
 (defun my/clutch-workspace--schema (entry)
   "Return the navigator group for ENTRY."
@@ -391,18 +403,33 @@
   "Open a workspace for the saved Clutch connection NAME."
   (interactive
    (list (completing-read "Подключение Clutch: " clutch-connection-alist nil t)))
+  (my/clutch-workspace--open #'clutch-query-console name name))
+
+(defun my/clutch-workspace-open-sqlite (file)
+  "Open SQLite FILE in the Clutch workspace."
+  (let ((file (file-truename file)))
+    (unless (file-regular-p file)
+      (user-error "Файл базы данных недоступен: %s" file))
+    (my/clutch-workspace--open #'clutch-query-sqlite-file file
+                               (abbreviate-file-name file))))
+
+(defun my/clutch-workspace--open (open-console target name)
+  "Open TARGET with OPEN-CONSOLE and display its workspace under NAME."
   (require 'clutch)
   (require 'treemacs)
   (let* ((state (my/clutch-workspace--current))
+         (workspace-editor (and state (my/clutch-workspace-editor state)))
          (editor (if (or (eq (selected-window) (treemacs-get-local-window))
                          (window-parameter nil 'window-side)
                          (and state (eq (selected-window)
                                         (my/clutch-workspace-results state))))
-                     (window-main-window)
+                     (or (and (window-live-p workspace-editor) workspace-editor)
+                         (get-largest-window)
+                         (user-error "Нет доступного окна для SQL-консоли"))
                    (selected-window)))
          (previous (window-buffer editor)))
     (select-window editor)
-    (clutch-query-console name)
+    (funcall open-console target)
     (setq editor (selected-window))
     (unless (my/clutch-connected-p)
       (user-error "Clutch не подключён"))

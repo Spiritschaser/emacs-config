@@ -83,7 +83,7 @@
 		    dart-mode doom-modeline drepl edraw evil
 		    evil-collection flymake-ruff imenu-list
 		    markdown-mode modus-themes org-mindmap pgsql
-		    ruff-format treemacs treemacs-evil))
+		    ruff-format sqlup-mode treemacs treemacs-evil))
  '(package-vc-selected-packages
    '((edraw :url "https://github.com/misohena/el-easydraw.git" :main-file
 	    "edraw.el")

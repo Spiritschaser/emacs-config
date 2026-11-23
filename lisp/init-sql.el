@@ -2,6 +2,10 @@
 
 (require 'sql)
 
+(use-package sqlup-mode
+  :ensure t
+  :hook (sql-mode . sqlup-mode))
+
 (use-package clutch
   :commands (clutch-mode clutch-connect))
 

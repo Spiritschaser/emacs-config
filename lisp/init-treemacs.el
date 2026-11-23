@@ -30,6 +30,35 @@
   :ensure t
   :after (treemacs evil))
 
+;;; Open SQLite files in the Clutch workspace
+
+(autoload 'my/clutch-workspace-open-sqlite "init-clutch-workspace")
+(declare-function treemacs--prop-at-point "treemacs-core-utils" (prop))
+(defvar treemacs-doubleclick-actions-config)
+
+(defun my/treemacs-sqlite-file-p (file)
+  "Return non-nil if local FILE starts with the SQLite format header."
+  (and (stringp file)
+       (not (file-remote-p file))
+       (file-regular-p file)
+       (ignore-error file-error
+         (with-temp-buffer
+           (set-buffer-multibyte nil)
+           (insert-file-contents-literally file nil 0 16)
+           (equal (buffer-string) "SQLite format 3\0")))))
+
+(defun my/treemacs-doubleclick-open-sqlite (open-file)
+  "Open the SQLite file at point in Clutch, or call OPEN-FILE."
+  (let ((file (treemacs--prop-at-point :path)))
+    (if (my/treemacs-sqlite-file-p file)
+        (my/clutch-workspace-open-sqlite file)
+      (funcall open-file))))
+
+(with-eval-after-load 'treemacs
+  (dolist (state '(file-node-open file-node-closed))
+    (add-function :around (alist-get state treemacs-doubleclick-actions-config)
+                  #'my/treemacs-doubleclick-open-sqlite)))
+
 ;;; Python for Treemacs — Windows and Linux
 
 (with-eval-after-load 'treemacs
