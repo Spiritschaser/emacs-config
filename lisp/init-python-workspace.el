@@ -7,6 +7,9 @@
 (require 'python)
 (require 'project)
 (require 'init-eldoc)
+
+(autoload 'my/python-console-fonts "init-fonts")
+
 (use-package comint-mime
   :demand t)
 
@@ -104,9 +107,9 @@
               comint-mime-renderer-alist (copy-tree comint-mime-renderer-alist)
               comint-mime-use-vtable t
               shr-inhibit-images t
-              shr-use-fonts nil
               comint-mime-image-props '(:max-width 1000 :max-height 750)
               comint-buffer-maximum-size 3000)
+  (my/python-console-fonts)
   (setq-local comint-prompt-read-only t)
   (add-hook 'comint-output-filter-functions #'comint-truncate-buffer t t)
   (add-hook 'comint-output-filter-functions #'python-workspace--trim-output t t)

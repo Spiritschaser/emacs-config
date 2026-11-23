@@ -2,31 +2,79 @@
 ;; --------------------------------------------------------------------------
 ;; Desktop File for Emacs
 ;; --------------------------------------------------------------------------
-;; Created Mon Nov 23 15:06:35 2026
+;; Created Tue Nov 24 01:18:34 2026
 ;; Desktop file format version 208
 ;; Emacs version 32.0.50
 
 ;; Global section:
-(setq desktop-saved-frameset [frameset 1 (1795435595726565400 . 1000000000) (desktop . "208") "samsy@vivo" nil nil ((((minibuffer . t) (undecorated) (skip-taskbar) (font . "-outline-Iosevka-regular-normal-normal-mono-28-*-*-*-c-*-iso8859-1") (border-width . 0) (internal-border-width . 0) (child-frame-border-width) (right-divider-width . 5) (bottom-divider-width . 0) (vertical-scroll-bars) (horizontal-scroll-bars . t) (foreground-color . "#ffffff") (background-color . "#000000") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing . 0) (left-fringe . 8) (right-fringe . 8) (no-focus-on-map) (no-accept-focus) (no-special-glyphs) (alpha-background) (borders-respect-alpha-background) (alpha) (menu-bar-lines . 1) (tab-bar-lines . 0) (height . 51) (tool-bar-lines . 2) (inhibit-double-buffering) (title) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 26) (scroll-bar-height . 26) (fullscreen . maximized) (z-group) (visibility . t) (scroll-bar-foreground . "#646464") (scroll-bar-background . "#000000") (display-type . color) (background-mode . dark) (cursor-color . "#ffffff") (font-parameter) (environment) (last-focus-update) (frameset--id . "571D-DF39-47CA-934D") (frameset--mini t . t) (my/clutch-workspace . #s(my/clutch-workspace "Unprintable entity" "Unprintable entity" "Unprintable entity" "Unprintable entity" "Unprintable entity" (nil) nil "Unprintable entity" files)) (icon-name) (unsplittable) (tool-bar-position . top) (display . "w32") (left + -11) (top + -11) (width . 227) (explicit-name) (modeline . t) (buffer-list "main.py")) ((min-height . 9) (min-width . 52) (min-height-ignore . 9) (min-width-ignore . 12) (min-height-safe . 2) (min-width-safe . 6) (min-pixel-height . 315) (min-pixel-width . 728) (min-pixel-height-ignore . 315) (min-pixel-width-ignore . 168) (min-pixel-height-safe . 70) (min-pixel-width-safe . 84)) hc (pixel-width . 3200) (pixel-height . 1809) (total-width . 229) (total-height . 52) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 448) (pixel-height . 1809) (total-width . 32) (total-height . 52) (normal-height . 1.0) (normal-width . 0.14125) (parameters (window-side . left) (window-slot . 0)) (buffer " *Treemacs-Buffer-#<frame *scratch* - GNU Emacs at vivo 000001b765a45a50>" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 nil nil 0 nil nil) (vscroll . 0) (dedicated . t) (point . 1830) (start . 1437)) (prev-buffers ("*Clutch: таблицы — ~/hh_search/vacancies.sqlite3*" 1 69))) (hc (last . t) (pixel-width . 2752) (pixel-height . 1809) (total-width . 197) (total-height . 52) (normal-height . 1.0) (normal-width . 0.85875) (combination-limit . t) (vc (pixel-width . 2304) (pixel-height . 1809) (total-width . 165) (total-height . 52) (normal-height . 1.0) (normal-width . 0.8372093023255813) (combination-limit . t) (leaf (pixel-width . 2304) (pixel-height . 1214) (total-width . 165) (total-height . 35) (normal-height . 0.6657449318608012) (normal-width . 1.0) (buffer "main.py" (selected . t) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 2 t nil) (vscroll . 0) (dedicated) (point . 4648) (start . 3984)) (prev-buffers ("*clutch: SQLite: ~/hh_search/vacancies.sqlite3* [schema 10t]" 1 56) ("*scratch*" 1 148))) (leaf (last . t) (pixel-width . 2304) (pixel-height . 595) (total-width . 165) (total-height . 17) (normal-height . 0.3342550681391988) (normal-width . 1.0) (buffer "*IPython Workspace:hh_search:e286ea76*" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 2 t nil) (vscroll . 0) (dedicated) (point . 2055) (start . 1582)))) (vc (last . t) (pixel-width . 448) (pixel-height . 1809) (total-width . 32) (total-height . 52) (normal-height . 1.0) (normal-width . 0.16279069767441862) (combination-limit) (leaf (pixel-width . 448) (pixel-height . 899) (total-width . 32) (total-height . 26) (normal-height . 0.5) (normal-width . 1.0) (buffer "*Ilist*" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 2 t nil) (vscroll . 0) (dedicated . t) (point . 125) (start . 1))) (leaf (last . t) (pixel-width . 448) (pixel-height . 910) (total-width . 32) (total-height . 26) (normal-height . 0.5) (normal-width . 1.0) (buffer "*codex[hh_search]*" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 2 t nil) (vscroll . 0) (dedicated) (point . 29275) (start . 28984)))))))])
-(setq my/desktop-tools '((treemacs " *Treemacs-Buffer-#<frame *scratch* - GNU Emacs at vivo 000001b765a45a50>" "c:/Users/samsy/hh_search/") (codex "*codex[hh_search]*" "c:/Users/samsy/hh_search" "01a20812-f4af-72c2-bd5d-d7e02fc887c8") (imenu "*Ilist*")))
+(setq desktop-saved-frameset [frameset 1 (1795472314987768639 . 1000000000) (desktop . "208") "dan@ubuntu" nil nil ((((minibuffer . t) (undecorated) (override-redirect) (font . "-UKWN-Iosevka Term-regular-normal-normal-*-16-*-*-*-d-0-iso10646-1") (border-width . 0) (internal-border-width . 0) (child-frame-border-width) (right-divider-width . 5) (bottom-divider-width . 0) (vertical-scroll-bars) (horizontal-scroll-bars . t) (foreground-color . "#ffffff") (background-color . "#000000") (mouse-color . "black") (border-color . "black") (screen-gamma) (line-spacing . 0) (left-fringe . 8) (right-fringe . 8) (no-special-glyphs) (scroll-bar-foreground . "#646464") (scroll-bar-background . "#000000") (menu-bar-lines . 1) (tab-bar-lines . 0) (tool-bar-lines . 2) (title) (wait-for-wm . t) (tool-bar-position . top) (inhibit-double-buffering) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 26) (scroll-bar-height . 26) (alpha) (alpha-background) (borders-respect-alpha-background) (no-focus-on-map) (no-accept-focus) (fullscreen . maximized) (visibility . t) (use-frame-synchronization) (skip-taskbar) (z-group) (display-type . color) (background-mode . dark) (cursor-color . "#ffffff") (font-parameter) (sticky) (shaded) (environment) (last-focus-update . t) (frameset--id . "571D-DF39-47CA-934D") (frameset--mini t . t) (my/clutch-workspace) (icon-name) (unsplittable) (display . ":0") (explicit-name) (modeline . t) (frameset-buffer-list "parties.py" "org-workspace-demo.org" "ORG-WORKSPACE.md" "SQL-WORKFLOW.md" "PYTHON-WORKSPACE.md") (dnd-root-window-position) (left . 768) (top . 0) (width . 238) (height . 42) (buffer-list "parties.py" "org-workspace-demo.org" "ORG-WORKSPACE.md" "SQL-WORKFLOW.md" "PYTHON-WORKSPACE.md")) ((min-height . 11) (min-width . 55) (min-height-ignore . 11) (min-width-ignore . 14) (min-height-safe . 2) (min-width-safe . 6) (min-pixel-height . 231) (min-pixel-width . 440) (min-pixel-height-ignore . 231) (min-pixel-width-ignore . 112) (min-pixel-height-safe . 42) (min-pixel-width-safe . 48)) hc (pixel-width . 1920) (pixel-height . 890) (total-width . 240) (total-height . 42) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 280) (pixel-height . 890) (total-width . 35) (total-height . 42) (normal-height . 1.0) (normal-width . 0.14634146341463417) (buffer " *Treemacs-Buffer-#<frame parties.py - GNU Emacs at ubuntu 0x5c0513bfc7a8>" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 nil nil 0 nil nil) (vscroll . 0) (dedicated . t) (point . 386) (start . 53))) (hc (last . t) (pixel-width . 1640) (pixel-height . 890) (total-width . 205) (total-height . 42) (normal-height . 1.0) (normal-width . 0.8536585365853658) (combination-limit . t) (leaf (pixel-width . 1144) (pixel-height . 890) (total-width . 143) (total-height . 42) (normal-height . 1.0) (normal-width . 0.7009803921568627) (buffer "parties.py" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 2 t nil) (vscroll . 0) (dedicated) (point . 831) (start . 384)) (prev-buffers ("org-workspace-demo.org" 228 881) ("ORG-WORKSPACE.md" 1 1) ("SQL-WORKFLOW.md" 1 1339) ("PYTHON-WORKSPACE.md" 1 2700))) (vc (last . t) (pixel-width . 496) (pixel-height . 890) (total-width . 62) (total-height . 42) (normal-height . 1.0) (normal-width . 0.2990196078431373) (combination-limit) (leaf (pixel-width . 496) (pixel-height . 442) (total-width . 62) (total-height . 21) (normal-height . 0.49275362318840576) (normal-width . 1.0) (buffer "*Ilist*" (selected) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 2 t nil) (vscroll . 0) (dedicated . t) (point . 1) (start . 1))) (leaf (last . t) (pixel-width . 496) (pixel-height . 448) (total-width . 62) (total-height . 21) (normal-height . 0.5072463768115942) (normal-width . 1.0) (buffer "*codex[.emacs.d]*" (selected . t) (hscroll . 0) (fringes 8 8 nil nil) (margins nil) (scroll-bars nil 0 t nil 2 t nil) (vscroll . 0) (dedicated) (point . 28734) (start . 28556)))))))])
+(setq my/desktop-tools '((imenu "*Ilist*") (treemacs " *Treemacs-Buffer-#<frame parties.py - GNU Emacs at ubuntu 0x5c0513bfc7a8>" "/home/dan/.emacs.d/lisp/") (codex "*codex[.emacs.d]*" "/home/dan/.emacs.d" "01a20a72-5b28-7341-85de-fedcec885231")))
 (setq desktop-missing-file-warning nil)
 (setq tags-file-name nil)
 (setq tags-table-list nil)
 (setq search-ring nil)
 (setq regexp-search-ring nil)
-(setq register-alist nil)
+(setq register-alist '((48 . #("              ((find-font (font-spec :family \"JetBrains Mono\"))\n               \"JetBrains Mono\")" 0 37 (fontified t) 37 44 (face font-lock-builtin-face fontified t) 44 45 (fontified t) 45 61 (face font-lock-string-face fontified t) 61 79 (fontified t) 79 95 (face font-lock-string-face fontified t) 95 96 (fontified t)))))
 (setq file-name-history nil)
 
 ;; Buffer section -- buffers listed in same order as in buffer list:
 (desktop-create-buffer 208
-  "c:/Users/samsy/hh_search/main.py"
-  "main.py"
+  "/home/dan/StudioProjects/quiz.let.wine/backend/app/api/routes/parties.py"
+  "parties.py"
   'python-ts-mode
-  '(code-cells-mode python-workspace-mode eglot-semantic-tokens-mode eglot-inlay-hints-mode flymake-mode refactor-suggestion-mode eglot--managed-mode eldoc-mode font-lock-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
-  4648
-  '(4649 nil)
+  '(eldoc-mode font-lock-mode display-line-numbers-mode hl-line-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  831
+  '(831 nil)
   nil
   nil
-  '((tab-width . 8) (indent-tabs-mode) (buffer-display-time 1795435554904833400 . 1000000000) (buffer-file-coding-system . utf-8-unix))
+  '((tab-width . 8) (indent-tabs-mode) (buffer-display-time 1795472264047803815 . 1000000000) (buffer-file-coding-system . undecided-unix) (overwrite-mode))
+  '((mark-ring (831))))
+
+(desktop-create-buffer 208
+  "/home/dan/.emacs.d/org-workspace-demo.org"
+  "org-workspace-demo.org"
+  'org-mode
+  '(font-lock-mode edraw-org-link-image-mode org-mindmap-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  881
+  '(881 nil)
+  nil
+  nil
+  '((tab-width . 8) (buffer-display-time 1795471591160916982 . 1000000000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode) (truncate-lines . t))
+  '((mark-ring (492 345 418 345))))
+
+(desktop-create-buffer 208
+  "/home/dan/.emacs.d/ORG-WORKSPACE.md"
+  "ORG-WORKSPACE.md"
+  'markdown-mode
+  '(eldoc-mode font-lock-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  1
+  '(1 nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-display-time 1795471245902022367 . 1000000000) (buffer-file-coding-system . utf-8-unix))
+  '((mark-ring nil)))
+
+(desktop-create-buffer 208
+  "/home/dan/.emacs.d/SQL-WORKFLOW.md"
+  "SQL-WORKFLOW.md"
+  'markdown-mode
+  '(eldoc-mode font-lock-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  1339
+  '(1339 nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-display-time 1795471242247830493 . 1000000000) (buffer-file-coding-system . utf-8-unix) (overwrite-mode))
+  '((mark-ring (1339 1696))))
+
+(desktop-create-buffer 208
+  "/home/dan/.emacs.d/PYTHON-WORKSPACE.md"
+  "PYTHON-WORKSPACE.md"
+  'markdown-mode
+  '(eldoc-mode font-lock-mode corfu-mode tab-line-mode evil-local-mode evil-collection-unimpaired-mode)
+  2700
+  '(2700 nil)
+  nil
+  nil
+  '((tab-width . 4) (buffer-display-time 1795471578012696740 . 1000000000) (buffer-file-coding-system . utf-8-unix))
   '((mark-ring nil)))
 
