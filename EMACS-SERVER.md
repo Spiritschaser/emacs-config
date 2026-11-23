@@ -72,19 +72,10 @@ Codex, чтобы получить новые аргументы запуска 
 
 ## Проверки
 
-Из корня `.emacs.d/elpa/codex-ide`:
-
-```bash
-./bin/run-tests.sh --test-file codex-ide-mcp-bridge-tests.el --test-file ../../tests/emacs-server-tests.el
-```
-
-Из `.emacs.d`:
-
-```bash
-python -m unittest discover -s tests -p test_emacs_proxy_transport.py -v
-```
-
-42 ERT и 3 Python-теста прошли на Windows / Emacs 31.1 / Python 3.13.
+Для текущей установки используйте команды диагностики выше и вызов MCP
+`emacs_get_all_buffers`. При разработке патча 42 ERT и 3 Python-теста
+прошли на Windows / Emacs 31.1 / Python 3.13. Отдельные тестовые файлы
+той проверки в текущем репозитории отсутствуют.
 TCP проверен со штатным сервером в изолированном временном каталоге:
 нет файла, файл погибшего PID, повторный запуск, потеря listener,
 штатная остановка с удалением файла. Unix-ветки и выбор аргументов
@@ -92,6 +83,6 @@ TCP проверен со штатным сервером в изолирова�
 нет, поэтому запуск там пока не подтверждён.
 
 Правки пакета сохранены в `patches/codex-ide-emacsclient-server-file.patch`.
-Порядок обновления пакета — `patches/README.md`. Сам установленный
+Порядок обновления пакета описан в [руководстве по патчу](patches/README.md). Сам установленный
 checkout `elpa/codex-ide/` исключён из основного Git, поэтому этот
 патч необходимо переносить вместе с конфигурацией.
