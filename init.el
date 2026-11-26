@@ -74,9 +74,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(cua-mode t)
- '(custom-enabled-themes '(modus-vivendi))
+ '(custom-enabled-themes '(modus-vivendi-tritanopia))
  '(custom-safe-themes
-   '("967c23e9ba179b80560774419f081df22e7674aac23c5c550b817e4a1ce7d058"
+   '("2493d0ad0bb94bd2ad297a6d76288751a532fd6d8d6af694ac14008caa6b7fa2"
+     "28f3ac0f5fade64dc7e27abe9d32e7d85576c40940977e8e319f25055d3a28b7"
+     "967c23e9ba179b80560774419f081df22e7674aac23c5c550b817e4a1ce7d058"
      default))
  '(package-selected-packages
    '(canvas-minimap clutch code-cells codex-ide comint-mime corfu
