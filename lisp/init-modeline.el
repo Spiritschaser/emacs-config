@@ -4,7 +4,7 @@
   :ensure t
   :custom
   ;; Appearance
-  (doom-modeline-height 32)
+  (doom-modeline-height 24)
   (doom-modeline-bar-width 4)
   (doom-modeline-icon t)
   (doom-modeline-major-mode-icon t)
